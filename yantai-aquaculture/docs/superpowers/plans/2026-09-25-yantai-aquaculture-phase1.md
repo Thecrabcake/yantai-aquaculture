@@ -10,6 +10,11 @@
 
 **Spec:** `docs/superpowers/specs/2026-09-25-yantai-aquaculture-design.md`
 
+## 实施偏差记录（M1 完成时更新）
+
+- **T3 moa 源**：实际测试契约断言大类 `虾蟹类`/`贝类` 而非 `白虾`——农业农村部月报只有大类均价，无单品种。品种级价格由 T5 补充。
+- **T5 惠农网**：验证为 SPA 不可爬（数据 JS 渲染、无品种名），且不存在可爬的周度品种行情站。按计划降级路径实现为 `sources/manual_price.py`（人工周度录入 `data/price_manual.json`，同 customs 模式）。下方 T5 步骤中 `huinong` 均指 `manual_price`。
+
 ## Global Constraints
 
 - Python 3.12（用户机器已装），新增依赖仅 requests / beautifulsoup4 / pytest
