@@ -1,6 +1,7 @@
 """静态站点生成：SQLite → site/。模板用 __XXX__ 占位符替换，无模板引擎。"""
 import json
 import pathlib
+import shutil
 import urllib.request
 from .. import config, db
 
@@ -59,4 +60,5 @@ def build(db_path: str, out_dir: str) -> None:
                  json.dumps(config.COST_DEFAULTS, ensure_ascii=False)),
         encoding="utf-8",
     )
+    shutil.copyfile(TEMPLATES / "guide.html", out / "guide.html")
     print(f"[build] site 已生成: {out}")
