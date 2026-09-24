@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>烟台海产行情</title>
+<style>
+  body { margin: 0; font-family: system-ui, "Microsoft YaHei", sans-serif;
+         background: #f5f6f8; }
+  header { background: #14532d; color: #fff; padding: 12px 16px;
+           font-size: 18px; font-weight: 600; }
+  .tabs { display: flex; gap: 8px; padding: 10px 12px; flex-wrap: wrap; }
+  .tab { padding: 8px 14px; border-radius: 16px; background: #fff;
+         font-size: 15px; border: 1px solid #ddd; }
+  .tab.active { background: #14532d; color: #fff; border-color: #14532d; }
+  #chart, #import-chart { width: 100%; height: 340px; background: #fff; }
+  .card { background: #fff; margin: 10px 12px; border-radius: 10px;
+          padding: 12px; }
+  .note { font-size: 12px; color: #888; margin: 8px 12px 20px; }
+  .count { font-size: 12px; color: #888; margin: 0 0 4px; }
+  a { color: #14532d; text-decoration: none; }
+  nav { display: flex; justify-content: space-around; background: #fff;
+        padding: 10px 0; border-top: 1px solid #eee; font-size: 14px;
+        position: sticky; bottom: 0; }
+</style>
+</head>
+<body>
+<header>烟台海产行情</header>
+<div class="tabs" id="tabs"></div>
+<div class="card"><div class="count" id="count"></div><div id="chart"></div></div>
+<div class="card"><h3 style="margin:4px 0 8px;font-size:15px">暖水虾月度进口量（吨）</h3>
+  <div id="import-chart"></div></div>
+<nav>
+  <a href="index.html">行情</a><a href="forecast.html">预测</a>
+  <a href="news.html">新闻</a><a href="cost.html">成本</a>
+  <a href="guide.html">新手</a>
+</nav>
+<div class="note">数据口径：全国主要批发市场公开报价，与海阳当地成交价存在价差，仅供参考，不构成买卖建议。数据源：农业农村部月报/海关月度/市场走访人工周录。</div>
+<script src="assets/echarts.min.js"></script>
+<script>
+const SERIES = __PRICE_SERIES__;
+const IMPORTS = __IMPORTS__;
+const HOLIDAYS = __HOLIDAYS__;
+const TABS = __TABS__;
+
+const tabs = document.getElementById("tabs");
+const countEl = document.getElementById("count");
+const chart = echarts.init(document.getElementById("chart"));
+const importChart = echarts.init(document.getElementById("import-chart"));
+let current = TABS[0];
+
+function renderTabs() {
+  tabs.innerHTML = "";
+  TABS.forEach(s => {
+    const el = document.createElement("div");
+    el.className = "tab" + (s === current ? " active" : "");
+    el.textContent = s;
+    el.onclick = () => { current = s; renderTabs(); renderChart(); };
+    tabs.appendChild(el);
+  });
+}
+
+function renderChart() {
+  const rows = SERIES[current] || [];
+  countEl.textContent = rows.length
+    ? "已收录 " + rows.length + " 条价格"
+    : "暂无数据：品种价格靠人工周录积累，大类（虾蟹类/贝类）有月度历史数据";
+  const markLines = HOLIDAYS.map(h => ({
+    xAxis: h.date,
+    lineStyle: { color: "#e11d48", type: "dashed" },
+    label: { formatter: h.name, fontSize: 11 },
+  }));
+  chart.setOption({
+    grid: { left: 44, right: 12, top: 24, bottom: 28 },
+    tooltip: { trigger: "axis" },
+    xAxis: { type: "time" },
+    yAxis: { type: "value", name: "元/斤", scale: true },
+    series: [{
+      type: "line", data: rows.map(r => [r.date, r.price]),
+      symbol: "circle", symbolSize: 4, lineStyle: { width: 2 },
+      markLine: { symbol: "none", data: markLines, silent: true },
+    }],
+  });
+}
+
+renderTabs(); renderChart();
+importChart.setOption({
+  grid: { left: 60, right: 12, top: 16, bottom: 28 },
+  xAxis: { type: "category", data: IMPORTS.map(r => r.ym) },
+  yAxis: { type: "value" },
+  series: [{ type: "bar", data: IMPORTS.map(r => r.volume_ton),
+             itemStyle: { color: "#0f766e" } }],
+});
+</script>
+</body>
+</html>

@@ -4,6 +4,10 @@ __pycache__/
 .venv/
 venv/
 
+# 烟台海产项目：构建产物与本地数据库不提交
+yantai-aquaculture/site/
+yantai-aquaculture/data/aquarium.db
+
 # Node
 node_modules/
 
