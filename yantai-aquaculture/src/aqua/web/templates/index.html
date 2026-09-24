@@ -64,7 +64,7 @@ function renderChart() {
   const rows = SERIES[current] || [];
   countEl.textContent = rows.length
     ? "已收录 " + rows.length + " 条价格"
-    : "暂无数据：品种价格靠人工周录积累，大类（虾蟹类/贝类）有月度历史数据";
+    : "暂无数据：价格点来自行情站抓取与人工周录，持续积累中";
   const markLines = HOLIDAYS.map(h => ({
     xAxis: h.date,
     lineStyle: { color: "#e11d48", type: "dashed" },

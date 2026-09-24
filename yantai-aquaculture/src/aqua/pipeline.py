@@ -2,13 +2,14 @@
 import csv
 import pathlib
 from . import db, newsman
-from .sources import moa, customs, manual_price
+from .sources import moa, customs, manual_price, huinong
 
 
 def run(db_path: str, csv_dir: str = None) -> dict:
     conn = db.connect(db_path)
     stats = {}
     for name, fn in [("moa", moa.run), ("customs", customs.run),
+                     ("huinong", huinong.run),
                      ("manual_price", manual_price.run),
                      ("news", newsman.run)]:
         try:

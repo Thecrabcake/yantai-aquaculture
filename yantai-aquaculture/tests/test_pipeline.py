@@ -15,6 +15,7 @@ def test_run_skips_failed_source_and_backs_up(tmp_path, monkeypatch):
         return 1
     monkeypatch.setattr("aqua.sources.manual_price.run", ok)
     monkeypatch.setattr("aqua.sources.customs.run", lambda conn, path=None: 0)
+    monkeypatch.setattr("aqua.sources.huinong.run", lambda conn: 0)
     monkeypatch.setattr("aqua.newsman.run", lambda conn, path=None: 0)
 
     db_path = str(tmp_path / "test.db")
