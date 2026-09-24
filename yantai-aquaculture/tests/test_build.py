@@ -38,3 +38,13 @@ def test_build_generates_news(tmp_path):
     build.build(str(tmp_path / "t3.db"), str(out))
     html = (out / "news.html").read_text(encoding="utf-8")
     assert "某地白斑病抬头" in html
+
+
+def test_build_generates_cost(tmp_path):
+    conn = db.connect(str(tmp_path / "t4.db"))
+    conn.commit()
+    out = tmp_path / "site4"
+    build.build(str(tmp_path / "t4.db"), str(out))
+    html = (out / "cost.html").read_text(encoding="utf-8")
+    assert "保本价" in html
+    assert "miao_price" in html      # COST_DEFAULTS 已内嵌

@@ -53,4 +53,10 @@ def build(db_path: str, out_dir: str) -> None:
         .replace("__NEWS__", json.dumps(news, ensure_ascii=False)),
         encoding="utf-8",
     )
+    (out / "cost.html").write_text(
+        (TEMPLATES / "cost.html").read_text(encoding="utf-8")
+        .replace("__COST_DEFAULTS__",
+                 json.dumps(config.COST_DEFAULTS, ensure_ascii=False)),
+        encoding="utf-8",
+    )
     print(f"[build] site 已生成: {out}")
