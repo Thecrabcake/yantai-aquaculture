@@ -1,0 +1,8 @@
+[
+  {"name": "皮皮虾", "date": "2026-08-20", "price": 58.0, "unit": "元/斤",
+   "market": "北海市场走访（大规格）", "source": "北海晚报"},
+  {"name": "梭子蟹", "date": "2026-08-21", "price": 42.5, "price_low": 30, "price_high": 55,
+   "unit": "元/斤", "market": "日照批发市场（南方蟹）", "source": "市场走访报道"},
+  {"name": "梭子蟹", "date": "2026-09-10", "price": 50.0, "price_low": 35, "price_high": 65,
+   "unit": "元/斤", "market": "无锡市场（普通/优质）", "source": "市场走访报道"}
+]
