@@ -8,7 +8,7 @@ import pathlib
 
 from .. import db
 
-DEFAULT_PATH = pathlib.Path(__file__).resolve().parents[2] / "data" / "import_manual.json"
+DEFAULT_PATH = pathlib.Path(__file__).resolve().parents[3] / "data" / "import_manual.json"
 
 
 def run(conn, path=None) -> int:
