@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>海产行情月报 __TITLE__</title>
+<style>
+  body { margin: 0; font-family: system-ui, "Microsoft YaHei", sans-serif;
+         background: #f5f6f8; }
+  header { background: #14532d; color: #fff; padding: 14px 16px; }
+  header h1 { margin: 0; font-size: 18px; }
+  header p { margin: 4px 0 0; font-size: 12px; opacity: .85; }
+  h2 { font-size: 15px; margin: 18px 14px 6px; color: #14532d; }
+  table { width: calc(100% - 28px); margin: 0 14px; border-collapse: collapse;
+          background: #fff; font-size: 13px; }
+  th, td { padding: 8px; text-align: center; border-bottom: 1px solid #eee; }
+  th { background: #f0fdf4; color: #14532d; font-weight: 600; }
+  td:first-child, th:first-child { text-align: left; }
+  .item { background: #fff; margin: 6px 14px; border-radius: 8px;
+          padding: 10px; font-size: 13px; line-height: 1.6; }
+  .item b { color: #111; }
+  .meta { font-size: 11px; color: #999; }
+  .comment { background: #fff7ed; border: 1px solid #fdba74; margin: 10px 14px;
+             border-radius: 8px; padding: 10px; font-size: 13px; }
+  .foot { font-size: 11px; color: #999; margin: 10px 14px 30px; }
+</style>
+</head>
+<body>
+<header><h1>海产行情月报 __TITLE__</h1>
+<p>烟台海产养殖行情助手 · 自动生成 · 数据口径见文末</p></header>
+
+<h2>一、价格总览（元/斤）</h2>
+<table id="ptable"></table>
+
+<h2>二、本月要闻</h2>
+<div id="news"></div>
+
+<h2>三、暖水虾进口量</h2>
+<div class="item" id="imports"></div>
+
+<h2>四、一句话点评</h2>
+<div class="comment">__COMMENT__</div>
+
+<div class="foot">数据口径：全国主要批发市场公开报价（农业农村部月报/海关月度/市场走访），与海阳当地成交价存在价差，仅供参考，不构成买卖建议。月报由维护者转发给养殖朋友。</div>
+<script>
+const ROWS = __ROWS__;
+const NEWS = __NEWS__;
+const IMPORTS = __IMPORTS__;
+
+const ptable = document.getElementById("ptable");
+ptable.innerHTML = `<tr><th>品种</th><th>当月均价</th><th>环比</th><th>同比</th></tr>` +
+  ROWS.map(r => `<tr><td>${r.species}</td><td>${r.cur}</td>
+    <td>${r.mom}</td><td>${r.yoy}</td></tr>`).join("");
+
+const ndiv = document.getElementById("news");
+ndiv.innerHTML = NEWS.length
+  ? NEWS.map(n => `<div class="item"><b>[${n.category}] ${n.title}</b>
+      <div>${n.summary || ""}</div>
+      <div class="meta">${n.date} · ${n.source}</div></div>`).join("")
+  : `<div class="item">本月暂无要闻收录</div>`;
+
+const idiv = document.getElementById("imports");
+idiv.innerHTML = IMPORTS.length
+  ? IMPORTS.map(r => `${r.ym}：${r.volume_ton.toLocaleString()} 吨`).join("　")
+  : "本月暂无暖水虾进口数据";
+</script>
+</body>
+</html>
