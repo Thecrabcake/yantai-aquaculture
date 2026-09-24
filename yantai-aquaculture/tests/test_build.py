@@ -26,3 +26,15 @@ def test_build_generates_forecast(tmp_path):
     html = (out / "forecast.html").read_text(encoding="utf-8")
     assert "历史统计" in html
     assert "不构成预测保证" in html
+
+
+def test_build_generates_news(tmp_path):
+    conn = db.connect(str(tmp_path / "t3.db"))
+    db.upsert_news(conn, {"date": "2026-09-20", "category": "病害",
+                          "title": "某地白斑病抬头", "summary": "摘要",
+                          "url": "", "source": "人工周选"})
+    conn.commit()
+    out = tmp_path / "site3"
+    build.build(str(tmp_path / "t3.db"), str(out))
+    html = (out / "news.html").read_text(encoding="utf-8")
+    assert "某地白斑病抬头" in html

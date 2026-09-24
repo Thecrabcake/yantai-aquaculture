@@ -47,4 +47,10 @@ def build(db_path: str, out_dir: str) -> None:
         .replace("__SCENARIOS__", json.dumps(config.SCENARIOS, ensure_ascii=False)),
         encoding="utf-8",
     )
+    news = db.news_list(conn)
+    (out / "news.html").write_text(
+        (TEMPLATES / "news.html").read_text(encoding="utf-8")
+        .replace("__NEWS__", json.dumps(news, ensure_ascii=False)),
+        encoding="utf-8",
+    )
     print(f"[build] site 已生成: {out}")

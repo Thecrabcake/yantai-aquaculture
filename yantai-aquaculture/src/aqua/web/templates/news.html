@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>行业新闻</title>
+<style>
+  body { margin: 0; font-family: system-ui, "Microsoft YaHei", sans-serif;
+         background: #f5f6f8; }
+  header { background: #14532d; color: #fff; padding: 12px 16px;
+           font-size: 18px; font-weight: 600; }
+  .item { background: #fff; margin: 10px 12px; border-radius: 10px;
+          padding: 12px; }
+  .title { font-size: 15px; font-weight: 600; color: #111; }
+  .summary { font-size: 13px; color: #555; margin-top: 6px; }
+  .meta { font-size: 12px; color: #999; margin-top: 6px; }
+  .tag { display: inline-block; font-size: 11px; padding: 2px 8px;
+         border-radius: 8px; color: #fff; margin-right: 6px; }
+  nav { display: flex; justify-content: space-around; background: #fff;
+        padding: 10px 0; border-top: 1px solid #eee; font-size: 14px;
+        position: sticky; bottom: 0; }
+  a { color: #14532d; text-decoration: none; }
+</style>
+</head>
+<body>
+<header>行业新闻</header>
+<div id="list"></div>
+<nav>
+  <a href="index.html">行情</a><a href="forecast.html">预测</a>
+  <a href="news.html">新闻</a><a href="cost.html">成本</a>
+  <a href="guide.html">新手</a>
+</nav>
+<script>
+const NEWS = __NEWS__;
+const COLORS = { "病害": "#dc2626", "进口": "#2563eb",
+                 "政策": "#16a34a", "天气": "#ea580c" };
+const list = document.getElementById("list");
+NEWS.forEach(n => {
+  const el = document.createElement("div");
+  el.className = "item";
+  const color = COLORS[n.category] || "#666";
+  const title = n.url
+    ? `<a class="title" href="${n.url}" target="_blank">${n.title}</a>`
+    : `<span class="title">${n.title}</span>`;
+  el.innerHTML = `<span class="tag" style="background:${color}">${n.category}</span>
+    ${title}
+    <div class="summary">${n.summary || ""}</div>
+    <div class="meta">${n.date} · ${n.source}</div>`;
+  list.appendChild(el);
+});
+</script>
+</body>
+</html>
