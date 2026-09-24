@@ -41,4 +41,10 @@ def build(db_path: str, out_dir: str) -> None:
         .replace("__TABS__", json.dumps(TABS, ensure_ascii=False)),
         encoding="utf-8",
     )
+    (out / "forecast.html").write_text(
+        (TEMPLATES / "forecast.html").read_text(encoding="utf-8")
+        .replace("__PRICE_SERIES__", json.dumps(series, ensure_ascii=False))
+        .replace("__SCENARIOS__", json.dumps(config.SCENARIOS, ensure_ascii=False)),
+        encoding="utf-8",
+    )
     print(f"[build] site 已生成: {out}")

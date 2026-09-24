@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>出虾价格区间</title>
+<style>
+  body { margin: 0; font-family: system-ui, "Microsoft YaHei", sans-serif;
+         background: #f5f6f8; }
+  header { background: #14532d; color: #fff; padding: 12px 16px;
+           font-size: 18px; font-weight: 600; }
+  .card { background: #fff; margin: 10px 12px; border-radius: 10px;
+          padding: 14px; }
+  label { font-size: 14px; color: #333; display: block; margin: 10px 0 4px; }
+  select, input { width: 100%; font-size: 16px; padding: 8px;
+                  border: 1px solid #ccc; border-radius: 6px;
+                  box-sizing: border-box; }
+  button { width: 100%; margin-top: 16px; padding: 12px; font-size: 16px;
+           background: #14532d; color: #fff; border: 0; border-radius: 8px; }
+  #result { margin-top: 14px; font-size: 15px; line-height: 1.8; }
+  .big { font-size: 22px; font-weight: 700; color: #14532d; }
+  .warn { font-size: 12px; color: #999; margin-top: 10px; }
+  nav { display: flex; justify-content: space-around; background: #fff;
+        padding: 10px 0; border-top: 1px solid #eee; font-size: 14px;
+        position: sticky; bottom: 0; }
+  a { color: #14532d; text-decoration: none; }
+</style>
+</head>
+<body>
+<header>出虾价格区间</header>
+<div class="card">
+  <label>品种</label>
+  <select id="species">
+    <option>虾蟹类</option><option>贝类</option>
+    <option>白虾</option><option>皮皮虾</option>
+    <option>梭子蟹</option><option>生蚝</option>
+  </select>
+  <label>投苗日期（参考用）</label>
+  <input type="date" id="stock">
+  <label>预计出虾：从</label>
+  <input type="date" id="from">
+  <label>到</label>
+  <input type="date" id="to">
+  <label>今年情景</label>
+  <select id="scenario"></select>
+  <button onclick="calc()">查历史价格区间</button>
+  <div id="result"></div>
+  <div class="warn">本结果基于历史统计，不构成预测保证；实际成交受病害、天气、进口等影响，仅供参考。</div>
+</div>
+<nav>
+  <a href="index.html">行情</a><a href="forecast.html">预测</a>
+  <a href="news.html">新闻</a><a href="cost.html">成本</a>
+  <a href="guide.html">新手</a>
+</nav>
+<script>
+const SERIES = __PRICE_SERIES__;
+const SCENARIOS = __SCENARIOS__;
+
+const sel = document.getElementById("scenario");
+SCENARIOS.forEach(s => {
+  const o = document.createElement("option");
+  o.value = s.factor; o.textContent = s.label;
+  sel.appendChild(o);
+});
+
+function md(d) { return d.slice(5, 10); }
+function inWindow(x, a, b) { return a <= b ? (a <= x && x <= b)
+                                           : (x >= a || x <= b); }
+
+function calc() {
+  const sp = document.getElementById("species").value;
+  const a = md(document.getElementById("from").value);
+  const b = md(document.getElementById("to").value);
+  if (!a || !b) { document.getElementById("result").innerHTML =
+      "请填出虾起止日期"; return; }
+  const rows = (SERIES[sp] || []).filter(r => inWindow(md(r.date), a, b));
+  const factor = parseFloat(sel.value);
+  const el = document.getElementById("result");
+  if (!rows.length) { el.innerHTML = "该窗口暂无历史数据"; return; }
+  const prices = rows.map(r => r.price).sort((x, y) => x - y);
+  const q = p => prices[Math.min(prices.length - 1,
+                                 Math.floor(prices.length * p))];
+  const mid = q(0.5), lo = q(0.25), hi = q(0.75);
+  const byYear = {};
+  rows.forEach(r => { const y = r.date.slice(0, 4);
+    (byYear[y] = byYear[y] || []).push(r.price); });
+  const rowsHtml = Object.keys(byYear).sort().map(y => {
+    const avg = byYear[y].reduce((s, v) => s + v, 0) / byYear[y].length;
+    return `<tr><td>${y}</td><td>${byYear[y].length}条</td>
+            <td>${avg.toFixed(1)}</td></tr>`; }).join("");
+  el.innerHTML =
+    `<div>该窗口近5年共 <b>${rows.length}</b> 条价格记录</div>
+     <div class="big">中位价 ${mid.toFixed(1)} 元/斤</div>
+     <div>常规区间 ${lo.toFixed(1)} ~ ${hi.toFixed(1)} 元/斤
+          （历史最低 ${Math.min(...prices).toFixed(1)} /
+           最高 ${Math.max(...prices).toFixed(1)}）</div>
+     <div style="margin-top:8px">${sel.selectedOptions[0].textContent}修正后：
+        <b>${(lo * factor).toFixed(1)} ~ ${(hi * factor).toFixed(1)} 元/斤</b></div>
+     <table style="width:100%;margin-top:10px;border-collapse:collapse">
+       <tr><th style="text-align:left">年份</th>
+           <th style="text-align:left">记录</th>
+           <th style="text-align:left">窗口均价</th></tr>${rowsHtml}</table>`;
+}
+</script>
+</body>
+</html>
