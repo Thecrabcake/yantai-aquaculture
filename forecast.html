@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>出虾价格区间</title>
+<style>
+  body { margin: 0; font-family: system-ui, "Microsoft YaHei", sans-serif;
+         background: #f5f6f8; }
+  header { background: #14532d; color: #fff; padding: 12px 16px;
+           font-size: 18px; font-weight: 600; }
+  .card { background: #fff; margin: 10px 12px; border-radius: 10px;
+          padding: 14px; }
+  label { font-size: 14px; color: #333; display: block; margin: 10px 0 4px; }
+  select, input { width: 100%; font-size: 16px; padding: 8px;
+                  border: 1px solid #ccc; border-radius: 6px;
+                  box-sizing: border-box; }
+  button { width: 100%; margin-top: 16px; padding: 12px; font-size: 16px;
+           background: #14532d; color: #fff; border: 0; border-radius: 8px; }
+  #result { margin-top: 14px; font-size: 15px; line-height: 1.8; }
+  .big { font-size: 22px; font-weight: 700; color: #14532d; }
+  .warn { font-size: 12px; color: #999; margin-top: 10px; }
+  nav { display: flex; justify-content: space-around; background: #fff;
+        padding: 10px 0; border-top: 1px solid #eee; font-size: 14px;
+        position: sticky; bottom: 0; }
+  a { color: #14532d; text-decoration: none; }
+</style>
+</head>
+<body>
+<header>出虾价格区间</header>
+<div class="card">
+  <label>品种</label>
+  <select id="species">
+    <option>虾蟹类</option><option>贝类</option>
+    <option>白虾</option><option>皮皮虾</option>
+    <option>梭子蟹</option><option>生蚝</option>
+  </select>
+  <label>投苗日期（参考用）</label>
+  <input type="date" id="stock">
+  <label>预计出虾：从</label>
+  <input type="date" id="from">
+  <label>到</label>
+  <input type="date" id="to">
+  <label>今年情景</label>
+  <select id="scenario"></select>
+  <button onclick="calc()">查历史价格区间</button>
+  <div id="result"></div>
+  <div class="warn">本结果基于历史统计，不构成预测保证；实际成交受病害、天气、进口等影响，仅供参考。</div>
+</div>
+<nav>
+  <a href="index.html">行情</a><a href="forecast.html">预测</a>
+  <a href="news.html">新闻</a><a href="cost.html">成本</a>
+  <a href="guide.html">新手</a>
+</nav>
+<script>
+const SERIES = {"虾蟹类": [{"date": "2023-10-15", "price": 33.865, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2023-11-15", "price": 31.76, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2024-02-15", "price": 41.475, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2024-03-15", "price": 37.535, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2024-04-15", "price": 37.815, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2024-05-15", "price": 33.66, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2024-06-15", "price": 32.11, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2024-11-15", "price": 32.42, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2024-12-15", "price": 32.755, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2025-06-15", "price": 28.27, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2025-08-15", "price": 28.01, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2025-10-15", "price": 28.33, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2025-11-15", "price": 26.16, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2025-12-15", "price": 29.08, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2026-01-15", "price": 34.89, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2026-02-15", "price": 38.475, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2026-06-15", "price": 33.2, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2026-07-15", "price": 32.4, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}], "白虾": [{"date": "2022-02-14", "price": 38.0, "price_low": 38.0, "price_high": 40.0, "source": "fishfirst", "market": "塘口/批发走访（多地区）"}, {"date": "2022-03-23", "price": 41.0, "price_low": 40.0, "price_high": 42.0, "source": "fishfirst", "market": "塘口/批发走访（多地区）"}, {"date": "2022-06-27", "price": 27.5, "price_low": 27.5, "price_high": 27.5, "source": "fishfirst", "market": "塘口/批发走访（多地区）"}, {"date": "2022-10-11", "price": 39.0, "price_low": 20.0, "price_high": 58.0, "source": "fishfirst", "market": "塘口/批发走访（多地区）"}, {"date": "2024-06-20", "price": 16.0, "price_low": 13.0, "price_high": 25.0, "source": "fishfirst", "market": "塘口/批发走访（多地区）"}, {"date": "2024-07-01", "price": 25.7, "price_low": 19.4, "price_high": 32.0, "source": "fishfirst", "market": "塘口/批发走访（多地区）"}, {"date": "2024-08-08", "price": 17.5, "price_low": 9.0, "price_high": 24.0, "source": "fishfirst", "market": "塘口/批发走访（多地区）"}, {"date": "2024-10-14", "price": 26.0, "price_low": 23.0, "price_high": 50.0, "source": "fishfirst", "market": "塘口/批发走访（多地区）"}, {"date": "2024-10-17", "price": 20.0, "price_low": 13.0, "price_high": 30.0, "source": "fishfirst", "market": "塘口/批发走访（多地区）"}, {"date": "2024-12-17", "price": 17.0, "price_low": 14.0, "price_high": 26.0, "source": "fishfirst", "market": "塘口/批发走访（多地区）"}, {"date": "2024-12-19", "price": 18.75, "price_low": 16.0, "price_high": 22.0, "source": "fishfirst", "market": "塘口/批发走访（多地区）"}], "皮皮虾": [{"date": "2026-08-09", "price": 55.0, "price_low": null, "price_high": null, "source": "网络行情报道", "market": "日照水产市场"}, {"date": "2026-08-20", "price": 58.0, "price_low": null, "price_high": null, "source": "北海晚报", "market": "北海市场走访（大规格）"}, {"date": "2026-08-20", "price": 42.5, "price_low": 35.0, "price_high": 50.0, "source": "网络行情报道", "market": "洞头渔港码头（统货）"}, {"date": "2026-09-05", "price": 40.0, "price_low": 35.0, "price_high": 45.0, "source": "网络行情报道", "market": "日照水产市场"}, {"date": "2026-09-09", "price": 38.0, "price_low": null, "price_high": null, "source": "网络行情报道", "market": "赣榆海头批发市场"}, {"date": "2026-09-10", "price": 57.5, "price_low": 55.0, "price_high": 60.0, "source": "网络行情报道", "market": "无锡水产市场（大规格）"}], "梭子蟹": [{"date": "2026-08-09", "price": 57.5, "price_low": 45.0, "price_high": 70.0, "source": "网络行情报道", "market": "日照水产市场"}, {"date": "2026-08-21", "price": 42.5, "price_low": 30.0, "price_high": 55.0, "source": "市场走访报道", "market": "日照批发市场（南方蟹）"}, {"date": "2026-09-05", "price": 40.0, "price_low": null, "price_high": null, "source": "网络行情报道", "market": "日照水产市场"}, {"date": "2026-09-09", "price": 62.5, "price_low": 45.0, "price_high": 80.0, "source": "网络行情报道", "market": "赣榆海头批发市场"}, {"date": "2026-09-10", "price": 50.0, "price_low": 35.0, "price_high": 65.0, "source": "市场走访报道", "market": "无锡市场（普通/优质）"}], "生蚝": [{"date": "2026-09-24", "price": 4.25, "price_low": 2.13, "price_high": 5.52, "source": "huinong", "market": "惠农网产地行情"}], "贝类": [{"date": "2023-10-15", "price": 9.43, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2023-11-15", "price": 9.785, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2024-02-15", "price": 10.58, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2024-03-15", "price": 10.45, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2024-04-15", "price": 9.915, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2024-05-15", "price": 9.84, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2024-06-15", "price": 9.43, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2024-11-15", "price": 9.23, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2024-12-15", "price": 9.855, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2025-06-15", "price": 8.94, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2025-08-15", "price": 9.955, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2025-10-15", "price": 10.36, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2025-11-15", "price": 10.845, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2025-12-15", "price": 11.035, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2026-01-15", "price": 11.505, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2026-02-15", "price": 11.825, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2026-06-15", "price": 10.1, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}, {"date": "2026-07-15", "price": 10.05, "price_low": null, "price_high": null, "source": "moa", "market": "全国批发市场均价"}]};
+const SCENARIOS = [{"key": "normal", "label": "正常年份", "factor": 1.0}, {"key": "import_up", "label": "进口大增", "factor": 0.95}, {"key": "import_down", "label": "进口收缩", "factor": 1.05}, {"key": "disease", "label": "病害减产", "factor": 1.1}];
+
+const sel = document.getElementById("scenario");
+SCENARIOS.forEach(s => {
+  const o = document.createElement("option");
+  o.value = s.factor; o.textContent = s.label;
+  sel.appendChild(o);
+});
+
+function md(d) { return d.slice(5, 10); }
+function inWindow(x, a, b) { return a <= b ? (a <= x && x <= b)
+                                           : (x >= a || x <= b); }
+
+function calc() {
+  const sp = document.getElementById("species").value;
+  const a = md(document.getElementById("from").value);
+  const b = md(document.getElementById("to").value);
+  if (!a || !b) { document.getElementById("result").innerHTML =
+      "请填出虾起止日期"; return; }
+  const rows = (SERIES[sp] || []).filter(r => inWindow(md(r.date), a, b));
+  const factor = parseFloat(sel.value);
+  const el = document.getElementById("result");
+  if (!rows.length) { el.innerHTML = "该窗口暂无历史数据"; return; }
+  const prices = rows.map(r => r.price).sort((x, y) => x - y);
+  const q = p => prices[Math.min(prices.length - 1,
+                                 Math.floor(prices.length * p))];
+  const mid = q(0.5), lo = q(0.25), hi = q(0.75);
+  const byYear = {};
+  rows.forEach(r => { const y = r.date.slice(0, 4);
+    (byYear[y] = byYear[y] || []).push(r.price); });
+  const rowsHtml = Object.keys(byYear).sort().map(y => {
+    const avg = byYear[y].reduce((s, v) => s + v, 0) / byYear[y].length;
+    return `<tr><td>${y}</td><td>${byYear[y].length}条</td>
+            <td>${avg.toFixed(1)}</td></tr>`; }).join("");
+  el.innerHTML =
+    `<div>该窗口近5年共 <b>${rows.length}</b> 条价格记录</div>
+     <div class="big">中位价 ${mid.toFixed(1)} 元/斤</div>
+     <div>常规区间 ${lo.toFixed(1)} ~ ${hi.toFixed(1)} 元/斤
+          （历史最低 ${Math.min(...prices).toFixed(1)} /
+           最高 ${Math.max(...prices).toFixed(1)}）</div>
+     <div style="margin-top:8px">${sel.selectedOptions[0].textContent}修正后：
+        <b>${(lo * factor).toFixed(1)} ~ ${(hi * factor).toFixed(1)} 元/斤</b></div>
+     <table style="width:100%;margin-top:10px;border-collapse:collapse">
+       <tr><th style="text-align:left">年份</th>
+           <th style="text-align:left">记录</th>
+           <th style="text-align:left">窗口均价</th></tr>${rowsHtml}</table>`;
+}
+</script>
+</body>
+</html>
