@@ -1,7 +1,7 @@
 """全流程入口：各源抓取 → 入库 → CSV 备份。"""
 import csv
 import pathlib
-from . import db
+from . import db, newsman
 from .sources import moa, customs, manual_price
 
 
@@ -9,7 +9,8 @@ def run(db_path: str, csv_dir: str = None) -> dict:
     conn = db.connect(db_path)
     stats = {}
     for name, fn in [("moa", moa.run), ("customs", customs.run),
-                     ("manual_price", manual_price.run)]:
+                     ("manual_price", manual_price.run),
+                     ("news", newsman.run)]:
         try:
             stats[name] = fn(conn)
             print(f"[pipeline] {name}: {stats[name]} 条")
