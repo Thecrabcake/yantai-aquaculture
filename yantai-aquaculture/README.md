@@ -25,7 +25,8 @@ PYTHONPATH=src python -c "from aqua import pipeline; pipeline.run('data/aquarium
 PYTHONPATH=src python -c "from aqua.web import build; build.build('data/aquarium.db', 'site')"
 # 3. 生成当月月报
 PYTHONPATH=src python -c "from aqua.web import report; report.generate('data/aquarium.db', '2026-09', 'site')"
-# 手机访问：python -m http.server 8000 --directory site
+# 4. 推送线上：cd site && git add . && git commit -m "站点更新" && git push
+# 朋友手机访问：https://thecrabcake.github.io/yantai-aquaculture/（本地预览：python -m http.server 8000 --directory site）
 ```
 
 ## 目录结构
